@@ -2,90 +2,80 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>安医智行系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>安医智行-完整APP</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: "思源黑体", "Microsoft YaHei", sans-serif;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
         }
         body {
-            background-color: #F5F7FA;
-            color: #333333;
+            background-color: #F5F5F5;
+            color: #333;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding-bottom: 60px; /* 给底部导航留空间 */
         }
-        h1 {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #1E88E5;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        h2 {
-            font-size: 20px;
-            font-weight: bold;
-            margin: 15px 0;
-            color: #333333;
-        }
-        h3 {
-            font-size: 16px;
-            font-weight: 500;
-            margin: 10px 0;
-            color: #333333;
-        }
-        .card {
-            background-color: #FFFFFF;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            padding: 30px;
-            margin: 20px auto;
-            max-width: 800px;
+        /* 页面基础样式 */
+        .page {
+            display: none;
             width: 100%;
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
         }
-        .login-container {
+        .page.active {
+            display: block;
+        }
+        /* 底部导航栏 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            background-color: #FFF;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+        .nav-item {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            padding: 10px 0;
+            cursor: pointer;
+            color: #999;
         }
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
+        .nav-item.active {
+            color: #1E88E5;
         }
-        .logo img {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 10px;
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 5px;
         }
-        .input-group {
-            margin-bottom: 20px;
+        .nav-item span {
+            font-size: 12px;
         }
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 16px;
-            color: #333333;
+        /* 通用组件样式 */
+        .card {
+            background-color: #FFF;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
-        .input-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #E0E0E0;
-            border-radius: 6px;
-            font-size: 16px;
-            transition: border 0.3s;
-        }
-        .input-group input:focus {
-            outline: none;
-            border-color: #1E88E5;
+        .section-title {
+            font-size: 14px;
+            color: #666;
+            margin: 15px 0 10px;
+            padding-left: 5px;
+            border-left: 3px solid #1E88E5;
         }
         .btn {
             width: 100%;
@@ -93,34 +83,137 @@
             border: none;
             border-radius: 6px;
             font-size: 16px;
-            font-weight: 500;
             cursor: pointer;
+            margin-bottom: 10px;
+            background-color: #FFF;
+            border: 1px solid #E0E0E0;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             transition: all 0.3s;
         }
+        .btn:hover {
+            background-color: #F9F9F9;
+        }
         .btn-primary {
-            background-color: #1E88E5;
-            color: #FFFFFF;
+            background-color: #E53935;
+            color: #FFF;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            justify-content: center;
         }
         .btn-primary:hover {
-            background-color: #1976D2;
-            transform: scale(0.98);
+            background-color: #D32F2F;
         }
         .btn-secondary {
             background-color: #F5F7FA;
             color: #1E88E5;
             border: 1px solid #1E88E5;
-            margin-top: 10px;
         }
         .btn-secondary:hover {
             background-color: #E3F2FD;
         }
+        .grid-btn-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .service-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background-color: #FFF;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .service-item:hover {
+            transform: scale(1.03);
+        }
+        .service-item i {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .service-item span {
+            font-size: 12px;
+            text-align: center;
+        }
+        /* 登录页样式 */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 0 20px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo div {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            background: #1E88E5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #333;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #E0E0E0;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #1E88E5;
+        }
+        /* 问卷页样式 */
         .question {
             margin-bottom: 25px;
+        }
+        .question h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .option-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
             margin-top: 10px;
         }
         .option {
@@ -131,7 +224,8 @@
             border: 1px solid #E0E0E0;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s;
+            flex: 1;
+            min-width: 120px;
         }
         .option.selected {
             border-color: #1E88E5;
@@ -151,42 +245,49 @@
             resize: none;
             min-height: 80px;
         }
+        .error-tip {
+            color: #E53935;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+        /* 结果页样式 */
         .result-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
+        .result-header h1 {
+            font-size: 20px;
+            color: #1E88E5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .nav-section {
             background-color: #F9FBFD;
             border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
         }
-        .route-info {
+        .nav-section h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
             display: flex;
-            justify-content: space-between;
-            margin: 15px 0;
-            font-size: 15px;
-        }
-        .route-label {
-            font-weight: 600;
-            color: #1E88E5;
-        }
-        .route-desc {
-            color: #666666;
+            align-items: center;
+            gap: 8px;
         }
         .route-line-container {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin: 20px 0;
+            gap: 10px;
+            margin: 15px 0;
         }
         .route-line {
             height: 4px;
             border-radius: 2px;
             flex: 1;
-            position: relative;
         }
         .route-optimal {
             background-color: #1E88E5;
@@ -198,7 +299,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-width: 80px;
+            min-width: 60px;
         }
         .node-dot {
             width: 12px;
@@ -213,24 +314,17 @@
             background-color: #E53935;
         }
         .node-label {
-            font-size: 14px;
+            font-size: 12px;
             text-align: center;
-        }
-        .info-card {
-            background-color: #F9FBFD;
-            border-left: 4px solid #1E88E5;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 15px;
         }
         .info-row {
             display: flex;
             justify-content: space-between;
             margin: 8px 0;
-            font-size: 15px;
+            font-size: 14px;
         }
         .info-key {
-            color: #666666;
+            color: #666;
         }
         .info-value {
             font-weight: 500;
@@ -238,68 +332,185 @@
         .emergency {
             color: #E53935;
         }
-        .accessibility {
-            color: #FFC107;
-        }
-        .page {
-            display: none;
-            width: 100%;
-        }
-        .page.active {
-            display: block;
-        }
-        .footer {
-            margin-top: auto;
-            text-align: center;
-            padding: 20px;
-            font-size: 14px;
-            color: #9E9E9E;
-        }
         .高德跳转提示 {
-            font-size: 13px;
-            color: #9E9E9E;
+            font-size: 12px;
+            color: #999;
             text-align: center;
             margin-top: 10px;
         }
-        .error-tip {
-            color: #E53935;
-            font-size: 14px;
-            margin-top: 5px;
+        /* 停车点推荐样式 */
+        .parking-recommend {
+            background-color: #FFF8E1;
+            border-left: 4px solid #FFC107;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0;
+        }
+        .parking-recommend h4 {
+            font-size: 15px;
+            color: #FF8F00;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        /* 隐藏底部导航的页面（登录页） */
+        .no-nav .bottom-nav {
             display: none;
+        }
+        .no-nav body {
+            padding-bottom: 0;
         }
     </style>
 </head>
 <body>
     <!-- 1. 登录页面 -->
-    <div id="login-page" class="page active">
+    <div id="login-page" class="page active no-nav">
         <div class="login-container">
             <div class="logo">
-                <div style="width:80px;height:80px;margin:0 auto;background:#1E88E5;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:36px;">
-                    <i class="fa fa-hospital-o" aria-hidden="true"></i>
-                </div>
+                <div><i class="fa fa-hospital-o" aria-hidden="true"></i></div>
                 <h1>安医智行系统</h1>
             </div>
-            <div class="card">
+            <div class="card" style="width: 100%; max-width: 400px;">
                 <div class="input-group">
                     <label for="username"><i class="fa fa-user-o" aria-hidden="true"></i> 用户名</label>
-                    <input type="text" id="username" placeholder="请输入任意用户名" required>
+                    <input type="text" id="username" placeholder="请输入用户名" required>
                 </div>
                 <div class="input-group">
                     <label for="password"><i class="fa fa-lock" aria-hidden="true"></i> 密码</label>
-                    <input type="password" id="password" placeholder="请输入任意密码" required>
+                    <input type="password" id="password" placeholder="请输入密码" required>
                 </div>
                 <button id="login-btn" class="btn btn-primary">
                     <i class="fa fa-sign-in" aria-hidden="true"></i> 登录系统
                 </button>
             </div>
-            <div class="footer">© 2025 安医智行 版权所有</div>
+            <div style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">
+                © 2025 安医智行 版权所有
+            </div>
         </div>
     </div>
 
-    <!-- 2. 问卷页面 -->
+    <!-- 2. 挂号页面 -->
+    <div id="registration-page" class="page">
+        <div class="card">
+            <button id="go-register" class="btn btn-primary">
+                <i class="fa fa-plus-circle" aria-hidden="true"></i> 我要挂号
+            </button>
+            <div style="padding: 10px; font-size: 14px; color: #666; line-height: 1.6;">
+                <p><strong>医院服务指南</strong></p>
+                <p>本院开设内科、外科、儿科、妇产科、骨科、皮肤科等20+临床科室，支持线上预约挂号、当日挂号及专家门诊预约。</p>
+                <p>📅 挂号时间：周一至周日 7:30-17:30（节假日不休）</p>
+                <p>📍 取号地点：各门诊楼1楼挂号窗口/自助机（支持医保刷卡、电子医保凭证、微信/支付宝支付）</p>
+                <p>💡 温馨提示：建议提前30分钟到院取号，避免错过就诊时间</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 地图页面 -->
+    <div id="map-page" class="page">
+        <div class="card">
+            <p style="text-align: center; padding: 40px 0; color: #999; line-height: 1.8;">
+                <i class="fa fa-wifi" aria-hidden="true" style="font-size: 40px; display: block; margin-bottom: 15px;"></i>
+                网络错误<br>
+                请检查网络连接后重试
+            </p>
+        </div>
+    </div>
+
+    <!-- 4. 停车页面 -->
+    <div id="parking-page" class="page">
+        <div class="card">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 60px; height: 60px; margin: 0 auto; background: #1E88E5; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; margin-bottom: 10px;">
+                    <i class="fa fa-car" aria-hidden="true"></i>
+                </div>
+                <h3 style="font-size: 18px; margin-bottom: 5px;">合肥市停车服务</h3>
+                <div style="color: #FFC107; margin-bottom: 5px;">
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                    <i class="fa fa-star-half-o" aria-hidden="true"></i>
+                    <span style="font-size: 12px; color: #999; margin-left: 5px;">4.6分</span>
+                </div>
+                <p style="font-size: 12px; color: #999;">服务提供：合肥市城市停车服务有限公司</p>
+            </div>
+            <div class="grid-btn-group">
+                <button class="btn shell-btn">
+                    <i class="fa fa-clock-o" aria-hidden="true"></i> 停车缴费
+                </button>
+                <button class="btn shell-btn">
+                    <i class="fa fa-credit-card" aria-hidden="true"></i> 补缴欠费
+                </button>
+                <button class="btn shell-btn">
+                    <i class="fa fa-car" aria-hidden="true"></i> 我的车辆
+                </button>
+                <button class="btn shell-btn">
+                    <i class="fa fa-map-marker" aria-hidden="true"></i> 找车位
+                </button>
+            </div>
+            <button class="btn shell-btn">
+                <i class="fa fa-user" aria-hidden="true"></i> 个人中心
+            </button>
+        </div>
+    </div>
+
+    <!-- 5. 我的页面 -->
+    <div id="mine-page" class="page">
+        <div class="card">
+            <div class="section-title">最近使用</div>
+            <div class="service-grid">
+                <div class="service-item shell-item">
+                    <i class="fa fa-car" aria-hidden="true" style="color: #009688;"></i>
+                    <span>合肥市停车服务</span>
+                </div>
+                <div class="service-item shell-item">
+                    <i class="fa fa-shopping-cart" aria-hidden="true" style="color: #4CAF50;"></i>
+                    <span>生活缴费</span>
+                </div>
+                <div class="service-item shell-item">
+                    <i class="fa fa-credit-card" aria-hidden="true" style="color: #E53935;"></i>
+                    <span>公共支付</span>
+                </div>
+                <div class="service-item shell-item">
+                    <i class="fa fa-map" aria-hidden="true" style="color: #2196F3;"></i>
+                    <span>城市热力图</span>
+                </div>
+            </div>
+            <div class="section-title">看病就医</div>
+            <div class="grid-btn-group">
+                <button class="btn shell-btn">
+                    <i class="fa fa-stethoscope" aria-hidden="true"></i> 挂号平台
+                </button>
+                <button class="btn shell-btn">
+                    <i class="fa fa-hospital-o" aria-hidden="true"></i> 公立医院
+                </button>
+                <button class="btn shell-btn">
+                    <i class="fa fa-heartbeat" aria-hidden="true"></i> 体检服务
+                </button>
+                <button class="btn shell-btn">
+                    <i class="fa fa-medkit" aria-hidden="true"></i> 疫苗服务
+                </button>
+                <button class="btn shell-btn">
+                    <i class="fa fa-ambulance" aria-hidden="true"></i> 急救服务
+                </button>
+            </div>
+            <div class="section-title">五险一金</div>
+            <div class="grid-btn-group">
+                <button class="btn shell-btn">
+                    <i class="fa fa-shield" aria-hidden="true"></i> 社保
+                </button>
+                <button class="btn shell-btn">
+                    <i class="fa fa-briefcase" aria-hidden="true"></i> 公积金
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. 问卷页面 -->
     <div id="questionnaire-page" class="page">
         <div class="card">
-            <h1><i class="fa fa-list-alt" aria-hidden="true"></i> 就医信息采集</h1>
+            <h1 style="font-size: 20px; margin-bottom: 20px;"><i class="fa fa-list-alt" aria-hidden="true"></i> 就医信息采集</h1>
             
             <div class="question">
                 <h2>1. 病情危急性判断 <span class="error-tip" id="emergency-tip">请选择病情危急性</span></h2>
@@ -369,32 +580,31 @@
 
             <div class="question">
                 <h2>5. 特殊需求</h2>
-                <textarea class="text-input" id="special-needs" placeholder="请输入补充需求（可选）"></textarea>
+                <textarea class="text-input" id="special-needs" placeholder="请输入补充需求（如：携带老人、需要轮椅、过敏史等，可选）"></textarea>
             </div>
 
             <button id="submit-questionnaire" class="btn btn-primary">
                 <i class="fa fa-check" aria-hidden="true"></i> 提交并生成导航方案
             </button>
-            <button id="back-to-login" class="btn btn-secondary">
-                <i class="fa fa-arrow-left" aria-hidden="true"></i> 返回登录
+            <button id="back-to-registration" class="btn btn-secondary">
+                <i class="fa fa-arrow-left" aria-hidden="true"></i> 返回挂号页
             </button>
         </div>
-        <div class="footer">© 2025 安医智行 版权所有</div>
     </div>
 
-    <!-- 3. 结果页面（优化后） -->
+    <!-- 7. 结果页面 -->
     <div id="result-page" class="page">
         <div class="card">
             <div class="result-header">
                 <h1><i class="fa fa-map-marker" aria-hidden="true"></i> 就医导航方案</h1>
-                <button id="back-to-questionnaire" class="btn btn-secondary" style="width: auto; padding: 8px 15px;">
-                    <i class="fa fa-arrow-left" aria-hidden="true"></i> 重新填写问卷
+                <button id="back-to-questionnaire" class="btn btn-secondary" style="width: auto; padding: 8px 15px; font-size: 14px;">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i> 重新填写
                 </button>
             </div>
 
             <!-- 路线规划模块 -->
             <div class="nav-section">
-                <h3>路线规划（起点：当前位置 → 终点：安徽省立医院）</h3>
+                <h3><i class="fa fa-road" aria-hidden="true"></i> 路线规划（起点：当前位置 → 终点：安徽省立医院）</h3>
                 <div class="route-line-container">
                     <div class="route-node">
                         <div class="node-dot dot-start"></div>
@@ -410,11 +620,33 @@
                         <div class="node-label">安徽省立医院<br>（目标科室）</div>
                     </div>
                 </div>
-                <div class="route-info">
-                    <div><span class="route-label">预计总耗时：</span> <span class="info-value" id="total-time">22分钟（避开拥堵路段）</span></div>
-                    <div><span class="route-label">就诊时间段：</span> <span class="info-value" id="visit-time">早上（门诊楼南门下客区无排队）</span></div>
+                <div class="info-row">
+                    <span class="info-key">预计总耗时：</span>
+                    <span class="info-value" id="total-time">22分钟（避开南二环拥堵路段，含医疗优先通行权）</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">就诊时间段：</span>
+                    <span class="info-value" id="visit-time">早上（8:00-12:00）门诊楼南门下客区无排队</span>
                 </div>
                 <div class="高德跳转提示">点击「开始导航」可跳转至高德地图进行实时导航</div>
+            </div>
+
+            <!-- 停车点推荐模块（新增） -->
+            <div class="nav-section" id="parking-recommend-section">
+                <h3><i class="fa fa-parking" aria-hidden="true"></i> 停车点推荐</h3>
+                <div class="parking-recommend">
+                    <h4><i class="fa fa-map-pin" aria-hidden="true"></i> 推荐停车点</h4>
+                    <p id="recommended-parking" style="font-size: 15px; font-weight: 500;">加载中...</p>
+                </div>
+                <div class="info-row" style="margin-top: 10px;">
+                    <span class="info-key">停车点距离：</span>
+                    <span class="info-value" id="parking-distance">500米（步行5分钟）</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">剩余车位：</span>
+                    <span class="info-value emergency" id="parking-available">23个（实时更新）</span>
+                </div>
+                <div class="高德跳转提示">点击「开始导航」可获取停车点精准路线</div>
             </div>
 
             <!-- 分流点规划模块 -->
@@ -422,33 +654,38 @@
                 <h3><i class="fa fa-map-signs" aria-hidden="true"></i> 分流点规划</h3>
                 <div class="info-row">
                     <span class="info-key">推荐下车点：</span>
-                    <span class="info-value" id="drop-point">门诊楼南门临时下客区</span>
+                    <span class="info-value" id="drop-point">门诊楼南门临时下客区（专属医疗通道入口）</span>
                 </div>
                 <div class="info-row">
                     <span class="info-key">步行引导：</span>
-                    <span class="info-value" id="walk-guide">从下客区步行1分钟直达挂号处（沿途设医疗导视标识）</span>
+                    <span class="info-value" id="walk-guide">从下客区步行1分钟直达门诊楼1楼挂号处，沿途设醒目的医疗导视标识（绿色箭头指引），全程无台阶障碍</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">导视服务：</span>
+                    <span class="info-value">下客区有志愿者引导，门诊楼内设有智能导诊机器人，可语音查询科室位置</span>
                 </div>
                 <div class="高德跳转提示">点击「开始导航」可跳转至高德地图获取步行引导详情</div>
             </div>
 
-            <!-- 停车场模块（仅私家车场景显示） -->
+            <!-- 停车场模块（仅私家车场景显示详细信息） -->
             <div id="parking-module" class="nav-section" style="display: none;">
-                <h3><i class="fa fa-parking" aria-hidden="true"></i> 停车场信息</h3>
+                <h3><i class="fa fa-info-circle" aria-hidden="true"></i> 停车场详细信息</h3>
                 <div class="info-row">
-                    <span class="info-key">推荐停车场：</span>
-                    <span class="info-value" id="parking-name">医院北二门智能停车场</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-key">剩余车位：</span>
-                    <span class="info-value emergency" id="parking-spaces">12个</span>
-                    <span class="info-key">排队时长：</span>
-                    <span class="info-value" id="parking-wait">8分钟</span>
+                    <span class="info-key">停车场类型：</span>
+                    <span class="info-value" id="parking-type">智能立体停车场</span>
                 </div>
                 <div class="info-row">
                     <span class="info-key">缴费方式：</span>
-                    <span class="info-value" id="payment-method">支持医保关联+手机扫码无感支付</span>
+                    <span class="info-value" id="payment-method">支持医保关联支付、微信/支付宝扫码支付、无感支付（绑定车牌自动扣费）</span>
                 </div>
-                <div class="高德跳转提示">点击「开始导航」可跳转至高德地图查看停车场实时空位</div>
+                <div class="info-row">
+                    <span class="info-key">停车费用：</span>
+                    <span class="info-value">前30分钟免费，2小时内5元，超过2小时每小时加收2元（就医患者凭挂号凭证可减免1小时费用）</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">开放时间：</span>
+                    <span class="info-value" id="parking-hours">24小时开放（含夜间安保巡逻）</span>
+                </div>
             </div>
 
             <!-- 医疗提示模块 -->
@@ -456,57 +693,154 @@
                 <h3><i class="fa fa-medkit" aria-hidden="true"></i> 就医提示</h3>
                 <div class="info-row">
                     <span class="info-key">目标科室位置：</span>
-                    <span class="info-value" id="dept-location">门诊楼3楼内科诊区（3号电梯直达）</span>
+                    <span class="info-value" id="dept-location">门诊楼3楼内科诊区（3号电梯直达，诊区门口设有签到机）</span>
                 </div>
                 <div class="info-row">
                     <span class="info-key">预检流程：</span>
-                    <span class="info-value" id="precheck-process">下车后请先到门诊大厅1楼预检台完成流调</span>
+                    <span class="info-value" id="precheck-process">下车后请先到门诊大厅1楼预检台完成流调登记，出示健康码、行程码，测量体温（无需排队，快速通过）</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">挂号凭证：</span>
+                    <span class="info-value">请携带身份证、医保卡（电子医保凭证亦可），提前10分钟到对应科室候诊区签到</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">便民服务：</span>
+                    <span class="info-value">门诊楼1楼设有充电宝租赁、饮水机、轮椅借用服务，3楼诊区设有候诊座椅和充电插座</span>
                 </div>
             </div>
 
             <!-- 操作按钮 -->
-            <button class="btn btn-primary">
+            <button id="navigate-btn" class="btn btn-primary">
                 <i class="fa fa-location-arrow" aria-hidden="true"></i> 开始导航
             </button>
             <button id="switch-plan" class="btn btn-secondary">
                 <i class="fa fa-exchange" aria-hidden="true"></i> 切换备选方案
             </button>
         </div>
-        <div class="footer">© 2025 安医智行 版权所有</div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+        <div class="nav-item active" data-page="registration-page">
+            <i class="fa fa-stethoscope" aria-hidden="true"></i>
+            <span>挂号</span>
+        </div>
+        <div class="nav-item" data-page="map-page">
+            <i class="fa fa-map" aria-hidden="true"></i>
+            <span>地图</span>
+        </div>
+        <div class="nav-item" data-page="parking-page">
+            <i class="fa fa-car" aria-hidden="true"></i>
+            <span>停车</span>
+        </div>
+        <div class="nav-item" data-page="mine-page">
+            <i class="fa fa-user" aria-hidden="true"></i>
+            <span>我的</span>
+        </div>
     </div>
 
     <script>
+        // 页面元素获取
         const loginPage = document.getElementById('login-page');
+        const registrationPage = document.getElementById('registration-page');
+        const mapPage = document.getElementById('map-page');
+        const parkingPage = document.getElementById('parking-page');
+        const minePage = document.getElementById('mine-page');
         const questionnairePage = document.getElementById('questionnaire-page');
         const resultPage = document.getElementById('result-page');
+        
+        // 按钮元素
         const loginBtn = document.getElementById('login-btn');
-        const backToLoginBtn = document.getElementById('back-to-login');
+        const goRegisterBtn = document.getElementById('go-register');
+        const backToRegistrationBtn = document.getElementById('back-to-registration');
         const submitQuestionnaireBtn = document.getElementById('submit-questionnaire');
         const backToQuestionnaireBtn = document.getElementById('back-to-questionnaire');
+        const navigateBtn = document.getElementById('navigate-btn');
         const switchPlanBtn = document.getElementById('switch-plan');
-        const parkingModule = document.getElementById('parking-module');
+        
         // 错误提示元素
         const emergencyTip = document.getElementById('emergency-tip');
         const transportTip = document.getElementById('transport-tip');
         const preferenceTip = document.getElementById('preference-tip');
         const timeTip = document.getElementById('time-tip');
-
+        
+        // 停车点相关元素
+        const parkingRecommendSection = document.getElementById('parking-recommend-section');
+        const recommendedParking = document.getElementById('recommended-parking');
+        const parkingDistance = document.getElementById('parking-distance');
+        const parkingAvailable = document.getElementById('parking-available');
+        const parkingModule = document.getElementById('parking-module');
+        
+        // 1. 登录逻辑
         loginBtn.addEventListener('click', function() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             if (username.trim() && password.trim()) {
+                // 切换到挂号页面
                 loginPage.classList.remove('active');
-                questionnairePage.classList.add('active');
+                registrationPage.classList.add('active');
+                // 激活底部导航的"挂号"项
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                document.querySelector('[data-page="registration-page"]').classList.add('active');
             } else {
-                alert('请输入用户名和密码（可随意填写）');
+                alert('请输入用户名和密码');
             }
         });
-
+        
+        // 2. 底部导航切换逻辑
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const pageId = this.getAttribute('data-page');
+                // 隐藏所有页面
+                document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+                // 显示对应页面
+                document.getElementById(pageId).classList.add('active');
+                // 更新导航激活状态
+                navItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // 3. 空壳模块按钮点击逻辑（停车/我的页面的按钮）
+        const shellBtns = document.querySelectorAll('.shell-btn');
+        const shellItems = document.querySelectorAll('.shell-item');
+        [...shellBtns, ...shellItems].forEach(elem => {
+            elem.addEventListener('click', function() {
+                alert('功能开发中，敬请期待～');
+            });
+        });
+        
+        // 4. 挂号流程逻辑
+        // 点击"我要挂号"进入问卷页
+        goRegisterBtn.addEventListener('click', function() {
+            registrationPage.classList.remove('active');
+            questionnairePage.classList.add('active');
+        });
+        
+        // 问卷页返回挂号页
+        backToRegistrationBtn.addEventListener('click', function() {
+            questionnairePage.classList.remove('active');
+            registrationPage.classList.add('active');
+            // 重置问卷选项
+            document.querySelectorAll('input[type="radio"]').forEach(input => {
+                input.checked = false;
+                input.parentElement.classList.remove('selected');
+            });
+            document.getElementById('special-needs').value = '';
+            // 隐藏错误提示
+            emergencyTip.style.display = 'none';
+            transportTip.style.display = 'none';
+            preferenceTip.style.display = 'none';
+            timeTip.style.display = 'none';
+        });
+        
+        // 5. 问卷选项选中逻辑
         const options = document.querySelectorAll('.option');
         options.forEach(option => {
             option.addEventListener('click', function() {
                 const name = this.querySelector('input').name;
-                // 隐藏对应问题的错误提示
+                // 隐藏对应错误提示
                 if (name === 'emergency') emergencyTip.style.display = 'none';
                 if (name === 'transport') transportTip.style.display = 'none';
                 if (name === 'preference') preferenceTip.style.display = 'none';
@@ -519,9 +853,10 @@
                 this.querySelector('input').checked = true;
             });
         });
-
+        
+        // 6. 提交问卷逻辑
         submitQuestionnaireBtn.addEventListener('click', function() {
-            // 逐个检查必填项
+            // 检查必填项
             const emergency = document.querySelector('input[name="emergency"]:checked')?.value;
             const transport = document.querySelector('input[name="transport"]:checked')?.value;
             const preference = document.querySelector('input[name="preference"]:checked')?.value;
@@ -549,6 +884,7 @@
 
             const specialNeeds = document.getElementById('special-needs').value;
 
+            // 场景判断
             let scene = 0;
             if (emergency === '严重' && transport === '私家车' && preference === '优先最短时间') {
                 scene = 1;
@@ -560,101 +896,153 @@
                 scene = 4;
             }
 
-            updateResult(scene, time, specialNeeds);
+            // 更新结果页面
+            updateResult(scene, transport, time, specialNeeds);
 
+            // 切换到结果页
             questionnairePage.classList.remove('active');
             resultPage.classList.add('active');
         });
-
-        function updateResult(scene, time, specialNeeds) {
+        
+        // 7. 结果页返回问卷页
+        backToQuestionnaireBtn.addEventListener('click', function() {
+            resultPage.classList.remove('active');
+            questionnairePage.classList.add('active');
+        });
+        
+        // 8. 开始导航弹窗
+        navigateBtn.addEventListener('click', function() {
+            alert('此举将唤出高德地图APP，全程在安医智行的陪伴下实时监控');
+        });
+        
+        // 9. 切换备选方案（空壳提示）
+        switchPlanBtn.addEventListener('click', function() {
+            alert('备选方案功能开发中，敬请期待～');
+        });
+        
+        // 10. 随机选择停车点
+        function getRandomParking(transportType) {
+            // 出租车停车点列表
+            const taxiParkings = [
+                { name: 'A停车点', distance: '300米（步行3分钟）', available: Math.floor(Math.random() * 30) + 5 },
+                { name: 'B停车点', distance: '450米（步行4分钟）', available: Math.floor(Math.random() * 30) + 5 },
+                { name: 'C停车点', distance: '600米（步行6分钟）', available: Math.floor(Math.random() * 30) + 5 }
+            ];
+            
+            // 私家车停车点列表
+            const privateCarParkings = [
+                { name: 'P1：银泰停车场', distance: '800米（步行8分钟）', available: Math.floor(Math.random() * 20) + 3, type: '商业综合体停车场' },
+                { name: 'P2：商之都停车场', distance: '1.2公里（步行12分钟/驾车3分钟）', available: Math.floor(Math.random() * 20) + 3, type: '商业综合体停车场' },
+                { name: 'P3：省立医院内部停车场', distance: '300米（步行3分钟）', available: Math.floor(Math.random() * 10) + 1, type: '医院专用停车场' }
+            ];
+            
+            if (transportType === '出租车') {
+                const randomIndex = Math.floor(Math.random() * taxiParkings.length);
+                return { ...taxiParkings[randomIndex], type: '出租车专用停车点' };
+            } else if (transportType === '私家车') {
+                const randomIndex = Math.floor(Math.random() * privateCarParkings.length);
+                return privateCarParkings[randomIndex];
+            } else {
+                // 其他出行方式隐藏停车推荐
+                return null;
+            }
+        }
+        
+        // 11. 更新结果页面内容
+        function updateResult(scene, transport, time, specialNeeds) {
+            // 处理停车点推荐
+            const parkingInfo = getRandomParking(transport);
+            
+            if (parkingInfo) {
+                // 显示停车推荐模块
+                parkingRecommendSection.style.display = 'block';
+                recommendedParking.textContent = parkingInfo.name;
+                parkingDistance.textContent = parkingInfo.distance;
+                parkingAvailable.textContent = `${parkingInfo.available}个（实时更新）`;
+                
+                // 私家车显示详细停车场信息
+                if (transport === '私家车') {
+                    parkingModule.style.display = 'block';
+                    document.getElementById('parking-type').textContent = parkingInfo.type;
+                    
+                    // 根据不同私家车停车场设置不同费用和开放时间
+                    if (parkingInfo.name.includes('省立医院内部')) {
+                        document.querySelector('#parking-module .info-row:nth-child(3) .info-value').textContent = 
+                            '前30分钟免费，2小时内4元，超过2小时每小时加收1.5元（就医患者凭挂号凭证可减免2小时费用）';
+                    } else {
+                        document.querySelector('#parking-module .info-row:nth-child(3) .info-value').textContent = 
+                            '前30分钟免费，2小时内5元，超过2小时每小时加收2元（就医患者凭挂号凭证可减免1小时费用）';
+                    }
+                } else {
+                    // 出租车隐藏详细停车场模块
+                    parkingModule.style.display = 'none';
+                }
+            } else {
+                // 其他出行方式隐藏停车推荐
+                parkingRecommendSection.style.display = 'none';
+                parkingModule.style.display = 'none';
+            }
+            
+            // 场景相关内容更新
             // 场景1：严重病情+私家车+最短时间
             if (scene === 1) {
                 document.querySelector('.route-node:nth-child(3) .node-label').textContent = '最优路线\n（急诊快速通道）';
                 document.querySelector('.route-node:nth-child(5) .node-label').textContent = '安徽省立医院\n（急诊医学科）';
-                document.getElementById('total-time').textContent = '18分钟（含急诊优先通行权）';
+                document.getElementById('total-time').textContent = '18分钟（含急诊优先通行权，全程绿灯优先）';
                 document.getElementById('visit-time').textContent = `${time}（急诊号无需排队，直接就诊）`;
-                document.getElementById('drop-point').textContent = '医院北二门急诊专属入口';
-                document.getElementById('walk-guide').textContent = '从入口步行0分钟直达急诊抢救室（配备医疗引导员）';
-                document.getElementById('parking-name').textContent = '急诊专用停车场';
-                document.getElementById('parking-spaces').textContent = '3个（急诊优先车位）';
-                document.getElementById('parking-wait').textContent = '0分钟（优先通行）';
-                document.getElementById('payment-method').textContent = '急诊缴费可走医保绿色通道';
-                document.getElementById('dept-location').textContent = '急诊楼1楼抢救室（直接进入）';
-                document.getElementById('precheck-process').textContent = '急诊患者免预检，直接由医护人员评估';
-                parkingModule.style.display = 'block';
+                document.getElementById('drop-point').textContent = '医院北二门急诊专属入口（救护车通道旁）';
+                document.getElementById('walk-guide').textContent = '从入口步行0分钟直达急诊抢救室，配备专职医疗引导员，全程护送';
+                document.getElementById('dept-location').textContent = '急诊楼1楼抢救室（直接进入，无需签到）';
+                document.getElementById('precheck-process').textContent = '急诊患者免预检，直接由医护人员评估病情，开通急救绿色通道';
             }
             // 场景2：普通病情+公交+步行最短
             else if (scene === 2) {
                 document.querySelector('.route-node:nth-child(3) .node-label').textContent = '最优路线\n（公交12路医疗专线）';
                 document.querySelector('.route-node:nth-child(5) .node-label').textContent = '安徽省立医院\n（门诊楼）';
-                document.getElementById('total-time').textContent = '40分钟（公交30分钟+步行10分钟）';
-                document.getElementById('visit-time').textContent = `${time}（门诊号建议提前15分钟取号）`;
-                document.getElementById('drop-point').textContent = '公交“省立医院站”（医疗专线A出口）';
-                document.getElementById('walk-guide').textContent = '从公交站步行3分钟直达门诊楼1楼预检台';
-                document.getElementById('dept-location').textContent = '门诊楼3楼内科诊区（3号电梯直达）';
-                document.getElementById('precheck-process').textContent = '下车后请先到门诊大厅1楼预检台完成流调';
-                parkingModule.style.display = 'none';
+                document.getElementById('total-time').textContent = '40分钟（公交30分钟+步行10分钟，公交站直达医院门口）';
+                document.getElementById('visit-time').textContent = `${time}（门诊号建议提前15分钟取号，当前候诊人数较少）`;
+                document.getElementById('drop-point').textContent = '公交“省立医院站”（医疗专线A出口，正对医院门诊楼）';
+                document.getElementById('walk-guide').textContent = '从公交站步行3分钟直达门诊楼1楼预检台，沿途设有遮阳棚和休息座椅';
+                document.getElementById('dept-location').textContent = '门诊楼3楼内科诊区（3号电梯直达，诊区编号302）';
+                document.getElementById('precheck-process').textContent = '下车后请先到门诊大厅1楼预检台完成流调登记，出示健康码即可快速通过';
             }
             // 场景3：常规检查+步行+无障碍
             else if (scene === 3) {
                 document.querySelector('.route-node:nth-child(3) .node-label').textContent = '最优路线\n（全程无障碍通道）';
                 document.querySelector('.route-node:nth-child(5) .node-label').textContent = '安徽省立医院\n（体检中心）';
-                document.getElementById('total-time').textContent = '15分钟（无障碍设施优先通行）';
-                document.getElementById('visit-time').textContent = `${time}（体检中心开放时间：8:00-17:00）`;
-                document.getElementById('drop-point').textContent = '医院东门无障碍专属入口';
-                document.getElementById('walk-guide').textContent = '从入口步行0分钟直达体检中心1楼（配备无障碍电梯）';
-                document.getElementById('dept-location').textContent = '体检中心1楼（无障碍通道直达）';
-                document.getElementById('precheck-process').textContent = '体检患者请先到体检中心前台领取导引单';
-                parkingModule.style.display = 'none';
+                document.getElementById('total-time').textContent = '15分钟（全程无障碍设施，平坦路面，无台阶）';
+                document.getElementById('visit-time').textContent = `${time}（体检中心开放时间：8:00-17:00，当前体检人数较少）`;
+                document.getElementById('drop-point').textContent = '医院东门无障碍专属入口（设有轮椅坡道和残障人士专用通道）';
+                document.getElementById('walk-guide').textContent = '从入口步行0分钟直达体检中心1楼，配备无障碍电梯和专用卫生间';
+                document.getElementById('dept-location').textContent = '体检中心1楼（无障碍通道直达，体检登记台在入口左侧）';
+                document.getElementById('precheck-process').textContent = '体检患者请先到体检中心前台领取导引单，出示身份证即可办理';
             }
             // 场景4：普通病情+出租车/其他
             else {
                 document.querySelector('.route-node:nth-child(3) .node-label').textContent = '最优路线\n（主干道医疗优先路线）';
                 document.querySelector('.route-node:nth-child(5) .node-label').textContent = '安徽省立医院\n（门诊楼）';
-                document.getElementById('total-time').textContent = '22分钟（避开拥堵路段）';
-                document.getElementById('visit-time').textContent = `${time}（门诊楼南门下客区无排队）`;
-                document.getElementById('drop-point').textContent = '门诊楼南门临时下客区';
-                document.getElementById('walk-guide').textContent = '从下客区步行1分钟直达挂号处（沿途设医疗导视标识）';
-                document.getElementById('dept-location').textContent = '门诊楼2楼外科诊区（2号电梯直达）';
-                document.getElementById('precheck-process').textContent = '下车后请先到门诊大厅1楼预检台完成流调';
-                parkingModule.style.display = 'none';
+                document.getElementById('total-time').textContent = '22分钟（避开南二环拥堵路段，选择畅通的支路通行）';
+                document.getElementById('visit-time').textContent = `${time}（门诊楼南门下客区无排队，即停即走）`;
+                document.getElementById('drop-point').textContent = '门诊楼南门临时下客区（专属医疗通道，禁止社会车辆长时间停留）';
+                document.getElementById('walk-guide').textContent = '从下客区步行1分钟直达挂号处，沿途设醒目的医疗导视标识（绿色箭头指引）';
+                document.getElementById('dept-location').textContent = '门诊楼2楼外科诊区（2号电梯直达，诊区门口设有签到机）';
+                document.getElementById('precheck-process').textContent = '下车后请先到门诊大厅1楼预检台完成流调登记，快速通过无需排队';
             }
 
             // 特殊需求补充（若有）
+            const existingSpecialTip = document.querySelector('.result-header + .info-row');
+            if (existingSpecialTip) existingSpecialTip.remove();
+            
             if (specialNeeds.trim()) {
                 const tip = document.createElement('div');
                 tip.className = 'info-row';
                 tip.innerHTML = `
                     <span class="info-key">特殊需求：</span>
-                    <span class="info-value">${specialNeeds}</span>
+                    <span class="info-value" style="color: #E53935;">${specialNeeds}（已同步至医院服务台，将提供对应保障）</span>
                 `;
                 document.querySelector('.result-header').insertAdjacentElement('afterend', tip);
             }
         }
-
-        backToLoginBtn.addEventListener('click', function() {
-            questionnairePage.classList.remove('active');
-            loginPage.classList.add('active');
-            document.querySelectorAll('input[type="radio"]').forEach(input => {
-                input.checked = false;
-                input.parentElement.classList.remove('selected');
-            });
-            document.getElementById('special-needs').value = '';
-            // 隐藏所有错误提示
-            emergencyTip.style.display = 'none';
-            transportTip.style.display = 'none';
-            preferenceTip.style.display = 'none';
-            timeTip.style.display = 'none';
-        });
-
-        backToQuestionnaireBtn.addEventListener('click', function() {
-            resultPage.classList.remove('active');
-            questionnairePage.classList.add('active');
-        });
-
-        switchPlanBtn.addEventListener('click', function() {
-            alert('备选方案功能已触发（当前为演示模式，实际项目可扩展多方案逻辑）');
-        });
     </script>
 </body>
 </html>
