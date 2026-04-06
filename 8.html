@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>医路通行 - 司机端（医院专属）</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #eff8ff 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 70px;
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            background: #fff;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+            z-index: 999;
+            height: 70px;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #8a94a3;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            color: #1677ff;
+            transform: translateY(-2px);
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .nav-item span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* 卡片 */
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(22, 119, 255, 0.1);
+        }
+
+        /* 按钮 */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1677ff 0%, #005ed0 100%);
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(22, 119, 255, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00c48c 0%, #00a67a 100%);
+            color: #fff;
+        }
+
+        .btn-warning {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+
+        .btn-danger {
+            background: #fff2f0;
+            color: #ff4d4f;
+        }
+
+        .btn-secondary {
+            background: #f0f7ff;
+            color: #1677ff;
+        }
+
+        /* 标题 */
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 20px 0 12px;
+            padding-left: 10px;
+            border-left: 4px solid #1677ff;
+        }
+
+        /* 司机登录页 */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: linear-gradient(135deg, #1677ff 0%, #005ed0 100%);
+            border-radius: 0 0 40px 40px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #fff;
+        }
+
+        .logo-icon {
+            width: 90px;
+            height: 90px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #fff;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #fafafa;
+            transition: all 0.2s;
+        }
+
+        /* 订单卡片 */
+        .order-card {
+            border-left: 4px solid #1677ff;
+            position: relative;
+        }
+
+        .order-tag {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tag-wait {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+
+        .tag-ing {
+            background: #e6f7ff;
+            color: #1677ff;
+        }
+
+        .order-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .order-row:last-child {
+            border-bottom: none;
+        }
+
+        .order-key {
+            color: #666;
+        }
+
+        .order-value {
+            font-weight: 500;
+            color: #333;
+            text-align: right;
+            line-height: 1.4;
+        }
+
+        .special-tag {
+            display: inline-block;
+            padding: 3px 6px;
+            background: #fff1f0;
+            color: #ff4d4f;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 4px;
+        }
+
+        .recommend-point {
+            background: #f6ffed;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #237804;
+            line-height: 1.5;
+        }
+
+        /* 交通状况卡片 */
+        .traffic-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .traffic-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .traffic-item:last-child {
+            border-bottom: none;
+        }
+
+        .traffic-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .traffic-light {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .green { background: #00c48c; }
+        .yellow { background: #fa8c16; }
+        .red { background: #ff4d4f; }
+
+        .car-count {
+            background: #e6f7ff;
+            color: #1677ff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* 详情页 */
+        .detail-header {
+            background: #fff;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .detail-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1677ff;
+            margin-bottom: 8px;
+        }
+
+        .no-nav {
+            padding-bottom: 0 !important;
+        }
+
+        .no-nav .bottom-nav {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 司机登录页 -->
+<div id="login-page" class="page active no-nav">
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-icon"><i class="fa fa-ambulance"></i></div>
+            <h1>医路通行</h1>
+            <p style="opacity:0.9;">医院专属接送 · 安全高效通行</p>
+        </div>
+
+        <div class="login-card">
+            <div class="input-group">
+                <label><i class="fa fa-id-card-o"></i> 司机工号</label>
+                <input id="driver-id" type="text" placeholder="请输入司机工号">
+            </div>
+            <div class="input-group">
+                <label><i class="fa fa-lock"></i> 登录密码</label>
+                <input id="driver-pwd" type="password" placeholder="请输入密码">
+            </div>
+            <button id="login-btn" class="btn btn-primary">
+                <i class="fa fa-sign-in"></i> 上岗登录
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 订单首页 -->
+<div id="order-page" class="page">
+    <div class="card" style="background: linear-gradient(135deg, #1677ff, #005ed0); color:#fff; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <h3>张师傅 您好</h3>
+                <p style="opacity:0.9; margin-top:4px;">当前在线 · 可接单 · 医院认证服务中</p>
+            </div>
+            <div style="font-size:30px;"><i class="fa fa-car"></i></div>
+        </div>
+    </div>
+
+    <!-- 详细交通信息 -->
+    <div class="section-title"><i class="fa fa-map-signs"></i> 医院周边实时交通（详细版）</div>
+    <div class="card traffic-card">
+        <div class="traffic-item">
+            <div class="traffic-left">
+                <div class="traffic-light green"></div>
+                <div>
+                    <strong>门诊楼南门（主上客区）</strong>
+                    <div style="font-size:12px;color:#666;margin-top:2px;">港湾式停车，可即停即走，无违停抓拍</div>
+                </div>
+            </div>
+            <span style="color:#00c48c;font-weight:bold;">畅通</span>
+        </div>
+        <div class="traffic-item">
+            <div class="traffic-left">
+                <div class="traffic-light yellow"></div>
+                <div>
+                    <strong>住院部北门（离院专用区）</strong>
+                    <div style="font-size:12px;color:#666;margin-top:2px;">14:00-17:00高峰，排队约3-5分钟</div>
+                </div>
+            </div>
+            <span style="color:#fa8c16;font-weight:bold;">缓行</span>
+        </div>
+        <div class="traffic-item">
+            <div class="traffic-left">
+                <div class="traffic-light red"></div>
+                <div>
+                    <strong>医院正门（芜湖路主入口）</strong>
+                    <div style="font-size:12px;color:#666;margin-top:2px;">早8-10点拥堵，建议绕行，电子抓拍严格</div>
+                </div>
+            </div>
+            <span style="color:#ff4d4f;font-weight:bold;">拥堵</span>
+        </div>
+        <div class="traffic-item">
+            <div class="traffic-left">
+                <div class="traffic-light green"></div>
+                <div>
+                    <strong>医技楼东侧应急通道</strong>
+                    <div style="font-size:12px;color:#666;margin-top:2px;">特殊患者优先通行，社会车辆禁止占用</div>
+                </div>
+            </div>
+            <span style="color:#00c48c;font-weight:bold;">优先通行</span>
+        </div>
+    </div>
+
+    <!-- 上客区车辆统计 -->
+    <div class="section-title"><i class="fa fa-car"></i> 医院上客区实时运力</div>
+    <div class="card" style="background:#f8f9ff;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <strong>南门出租车专用候客区</strong>
+                <div style="font-size:12px;color:#666;margin-top:2px;">安徽省立医院门诊楼南侧50米</div>
+            </div>
+            <div class="car-count">在营车辆：12 台</div>
+        </div>
+    </div>
+
+    <div class="section-title"><i class="fa fa-list-alt"></i> 待接患者订单（详细信息）</div>
+
+    <!-- 患者1 -->
+    <div class="card order-card">
+        <div class="order-tag tag-wait">待接单</div>
+        <h3 class="order-title"><i class="fa fa-user-o"></i> 来院就诊接送</h3>
+        <div class="order-row">
+            <span class="order-key">患者信息</span>
+            <span class="order-value">陈先生 / 68岁 / 骨科术后复查</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">接送类型</span>
+            <span class="order-value">居家 → 医院（就诊接送）</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">出发地点</span>
+            <span class="order-value">合肥市包河区桐城南路绿城玉兰公寓3号楼单元门口</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">到达地点</span>
+            <span class="order-value">安徽省立医院门诊楼南门（骨科分诊区）</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">特殊需求</span>
+            <span class="order-value">
+                <span class="special-tag">高龄老人</span>
+                <span class="special-tag">行动不便</span>
+                <span class="special-tag">需搀扶</span>
+            </span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">同行人员</span>
+            <span class="order-value">1名家属陪同，携带病历包+拐杖</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">预计里程</span>
+            <span class="order-value">4.6公里 | 预计12分钟</span>
+        </div>
+        <div class="recommend-point">
+            <strong>推荐上车点：</strong> 小区北门东侧无障碍通道口，靠近单元门，路面平坦无台阶，方便老人上下车。
+        </div>
+        <div style="margin-top:16px; display:flex; gap:10px;">
+            <button class="btn btn-danger" style="flex:1;">拒单</button>
+            <button class="btn btn-success" style="flex:1;" onclick="showPage('detail-page')">接单</button>
+        </div>
+    </div>
+
+    <!-- 患者2 -->
+    <div class="card order-card">
+        <div class="order-tag tag-wait">待接单</div>
+        <h3 class="order-title"><i class="fa fa-user-o"></i> 出院接送</h3>
+        <div class="order-row">
+            <span class="order-key">患者信息</span>
+            <span class="order-value">刘女士 / 56岁 / 内科康复出院</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">接送类型</span>
+            <span class="order-value">医院 → 居家（离院接送）</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">上车地点</span>
+            <span class="order-value">安徽省立医院住院部北门出院专用通道</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">目的地</span>
+            <span class="order-value">合肥市蜀山区南七里站街道稻香村社区</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">特殊需求</span>
+            <span class="order-value">
+                <span class="special-tag">轮椅使用</span>
+                <span class="special-tag">携带行李</span>
+            </span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">随行物品</span>
+            <span class="order-value">行李箱1个、医用便携氧气袋、药品保温箱</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">预计里程</span>
+            <span class="order-value">6.2公里 | 预计18分钟</span>
+        </div>
+        <div class="recommend-point">
+            <strong>推荐下车点：</strong> 社区南门无障碍入口，靠近电梯厅，路面宽敞，可临时停靠2分钟，方便轮椅推行。
+        </div>
+        <div style="margin-top:16px; display:flex; gap:10px;">
+            <button class="btn btn-danger" style="flex:1;">拒单</button>
+            <button class="btn btn-success" style="flex:1;" onclick="showPage('detail-page')">接单</button>
+        </div>
+    </div>
+
+    <!-- 患者3 -->
+    <div class="card order-card">
+        <div class="order-tag tag-wait">待接单</div>
+        <h3 class="order-title"><i class="fa fa-user-o"></i> 急诊转诊接送</h3>
+        <div class="order-row">
+            <span class="order-key">患者信息</span>
+            <span class="order-value">赵先生 / 45岁 / 轻症转诊</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">接送类型</span>
+            <span class="order-value">社区医院 → 省立医院（转诊）</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">上车地点</span>
+            <span class="order-value">合肥市包河区常青街道社区卫生服务中心门口</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">到达地点</span>
+            <span class="order-value">安徽省立医院急诊楼入口</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">特殊需求</span>
+            <span class="order-value">
+                <span class="special-tag">轻伤员</span>
+                <span class="special-tag">无需担架</span>
+            </span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">备注</span>
+            <span class="order-value">携带检查报告，需准时送达，避免错过预约号</span>
+        </div>
+        <div class="recommend-point">
+            <strong>推荐上车点：</strong> 社区医院正门右侧临时停靠点，有明显“转诊车辆专用”标识，无需排队。
+        </div>
+        <div style="margin-top:16px; display:flex; gap:10px;">
+            <button class="btn btn-danger" style="flex:1;">拒单</button>
+            <button class="btn btn-success" style="flex:1;" onclick="showPage('detail-page')">接单</button>
+        </div>
+    </div>
+</div>
+
+<!-- 订单详情页 -->
+<div id="detail-page" class="page">
+    <div class="detail-header">
+        <h2 class="detail-title">订单详情</h2>
+        <p style="color:#666;">来院就诊 · 陈先生（68岁）</p>
+    </div>
+
+    <div class="card">
+        <div class="order-row">
+            <span class="order-key">上车位置</span>
+            <span class="order-value">合肥市包河区桐城南路绿城玉兰公寓北门无障碍通道</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">目的地</span>
+            <span class="order-value">安徽省立医院门诊楼南门骨科分诊区</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">患者年龄</span>
+            <span class="order-value">68岁</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">病情状况</span>
+            <span class="order-value">骨科术后复查，下肢行动不便，可缓慢行走</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">特殊需求</span>
+            <span class="order-value" style="color:#ff4d4f; font-weight:bold;">需要搀扶上下车，车内放置拐杖，避免颠簸</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">预计距离</span>
+            <span class="order-value">4.6公里</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">预计时间</span>
+            <span class="order-value">12分钟</span>
+        </div>
+        <div class="order-row">
+            <span class="order-key">联系电话</span>
+            <span class="order-value">138 **** 6789</span>
+        </div>
+    </div>
+
+    <div style="display:flex; gap:12px; margin-top:20px;">
+        <button class="btn btn-secondary" style="flex:1;">
+            <i class="fa fa-phone"></i> 联系患者
+        </button>
+        <button class="btn btn-primary" style="flex:1;">
+            <i class="fa fa-location-arrow"></i> 开始导航
+        </button>
+    </div>
+
+    <button class="btn btn-success" style="margin-top:12px;">
+        <i class="fa fa-check-circle"></i> 已接到患者
+    </button>
+
+    <button class="btn btn-warning" style="margin-top:12px;">
+        <i class="fa fa-hospital-o"></i> 已送达医院
+    </button>
+</div>
+
+<!-- 我的页面 -->
+<div id="mine-page" class="page">
+    <div class="card">
+        <div style="display:flex; align-items:center; gap:14px;">
+            <div style="width:60px; height:60px; background:#1677ff; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px;">
+                <i class="fa fa-car"></i>
+            </div>
+            <div>
+                <h3>张师傅</h3>
+                <p style="color:#888; font-size:13px;">医院认证司机 | 在线中 | 服务星级：5.0</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-title">订单统计</div>
+    <div class="card" style="display:grid; grid-template-columns:1fr 1fr 1fr; text-align:center;">
+        <div>
+            <h3 style="color:#1677ff;">12</h3>
+            <p style="font-size:12px; color:#888;">今日订单</p>
+        </div>
+        <div>
+            <h3 style="color:#00c48c;">100%</h3>
+            <p style="font-size:12px; color:#888;">完成率</p>
+        </div>
+        <div>
+            <h3 style="color:#fa8c16;">5星</h3>
+            <p style="font-size:12px; color:#888;">服务评分</p>
+        </div>
+    </div>
+
+    <div class="section-title">司机服务</div>
+    <button class="btn btn-light"><i class="fa fa-list-ol"></i> 全部订单记录</button>
+    <button class="btn btn-light"><i class="fa fa-credit-card"></i> 收入明细统计</button>
+    <button class="btn btn-light"><i class="fa fa-bell"></i> 订单消息通知</button>
+    <button class="btn btn-light"><i class="fa fa-cog"></i> 账号安全设置</button>
+    <button class="btn btn-danger" style="margin-top:20px;"><i class="fa fa-sign-out"></i> 退出登录</button>
+</div>
+
+<!-- 底部导航 -->
+<div class="bottom-nav">
+    <div class="nav-item active" data-page="order-page">
+        <i class="fa fa-list-alt"></i>
+        <span>订单</span>
+    </div>
+    <div class="nav-item" data-page="detail-page">
+        <i class="fa fa-location-arrow"></i>
+        <span>行程</span>
+    </div>
+    <div class="nav-item" data-page="mine-page">
+        <i class="fa fa-user"></i>
+        <span>我的</span>
+    </div>
+</div>
+
+<script>
+    const pages = document.querySelectorAll('.page');
+    const navItems = document.querySelectorAll('.nav-item');
+
+    // 登录 - 已修复
+    document.getElementById('login-btn').onclick = () => {
+        const id = document.getElementById('driver-id').value;
+        const pwd = document.getElementById('driver-pwd').value;
+        if(id && pwd) {
+            showPage('order-page');
+        } else {
+            alert('请输入司机工号和密码');
+        }
+    };
+
+    // 切换页面
+    function showPage(id) {
+        pages.forEach(p => p.classList.remove('active'));
+        navItems.forEach(n => n.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        
+        const nav = document.querySelector(`[data-page="${id}"]`);
+        if(nav) nav.classList.add('active');
+    }
+
+    navItems.forEach(item => {
+        item.onclick = () => showPage(item.dataset.page);
+    });
+</script>
+</body>
+</html>
