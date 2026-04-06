@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>医路智行 - 智慧医疗服务平台</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #eff8ff 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 70px;
+        }
+
+        /* 页面容器 */
+        .page {
+            display: none;
+            width: 100%;
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            background: #fff;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+            z-index: 999;
+            height: 70px;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #8a94a3;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            color: #1677ff;
+            transform: translateY(-2px);
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .nav-item span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.8);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(22, 119, 255, 0.1);
+        }
+
+        /* 标题样式 */
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 20px 0 12px;
+            padding-left: 10px;
+            border-left: 4px solid #1677ff;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1677ff 0%, #005ed0 100%);
+            color: #fff;
+            justify-content: center;
+            font-size: 17px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(22, 119, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #005ed0 0%, #004cad 100%);
+        }
+
+        .btn-secondary {
+            background: #f0f7ff;
+            color: #1677ff;
+            border: 1px solid #d6e8ff;
+        }
+
+        .btn-light {
+            background: #f8f9fa;
+            color: #555;
+        }
+
+        /* 网格布局 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        /* 功能图标项 */
+        .service-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 10px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+            transition: all 0.2s;
+        }
+
+        .service-item:active {
+            transform: scale(0.95);
+        }
+
+        .service-item i {
+            font-size: 24px;
+            margin-bottom: 8px;
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .service-item span {
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* 登录页 */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: linear-gradient(135deg, #1677ff 0%, #005ed0 100%);
+            border-radius: 0 0 40px 40px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #fff;
+        }
+
+        .logo-icon {
+            width: 90px;
+            height: 90px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #fff;
+            backdrop-filter: blur(10px);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #fafafa;
+            transition: all 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #1677ff;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+        }
+
+        /* 轮播公告 */
+        .banner {
+            background: linear-gradient(135deg, #ff9500 0%, #ff5e3a 100%);
+            color: #fff;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .banner h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .banner p {
+            font-size: 13px;
+            opacity: 0.95;
+        }
+
+        /* 医生卡片 */
+        .doctor-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #fff;
+            border-radius: 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.2s;
+        }
+
+        .doctor-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .doctor-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #1677ff;
+        }
+
+        .doctor-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .doctor-info p {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* 问卷样式 */
+        .question {
+            margin-bottom: 28px;
+        }
+
+        .question h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #222;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .option {
+            flex: 1;
+            min-width: 140px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            background: #fafafa;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .option.selected {
+            border-color: #1677ff;
+            background: #e6f7ff;
+            color: #1677ff;
+            transform: scale(1.02);
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            font-size: 15px;
+            min-height: 100px;
+            resize: none;
+            background: #fafafa;
+        }
+
+        .error-tip {
+            color: #ff4d4f;
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        /* 结果页全新样式 */
+        .result-container {
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .result-header h1 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1677ff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+            border: 1px solid #f0f5ff;
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            box-shadow: 0 12px 32px rgba(22, 119, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1677ff;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-left: 4px solid #1677ff;
+            padding-left: 10px;
+        }
+
+        /* 路线节点 */
+        .route-line-container {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .route-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 90px;
+        }
+
+        .node-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+        }
+
+        .dot-start {
+            background: #00c48c;
+            box-shadow: 0 0 0 4px rgba(0, 196, 140, 0.2);
+        }
+
+        .dot-end {
+            background: #ff4d4f;
+            box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.2);
+        }
+
+        .node-text {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .route-line {
+            height: 4px;
+            flex: 1;
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .route-animated {
+            background: linear-gradient(90deg, #1677ff 0%, #40a9ff 50%, #1677ff 100%);
+            background-size: 200% 100%;
+            animation: routeFlow 2s linear infinite;
+        }
+
+        @keyframes routeFlow {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .route-normal {
+            background: #e5e6eb;
+        }
+
+        /* 信息布局 */
+        .info-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .info-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .info-text {
+            font-size: 15px;
+            color: #222;
+            line-height: 1.5;
+        }
+
+        /* 停车点标签 */
+        .parking-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .parking-tab {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .tab-active {
+            background: #fff7e6;
+            color: #fa8c16;
+            border: 1px solid #ffd591;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .no-nav {
+            padding-bottom: 0 !important;
+        }
+
+        .no-nav .bottom-nav {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 登录页 -->
+<div id="login-page" class="page active no-nav">
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-icon"><i class="fa fa-heartbeat"></i></div>
+            <h1>医路智行</h1>
+            <p style="margin-top:8px; opacity:0.9;">智慧医疗 · 便捷就医 · 全程陪伴</p>
+        </div>
+
+        <div class="login-card">
+            <div class="input-group">
+                <label><i class="fa fa-user"></i> 用户名</label>
+                <input id="username" type="text" placeholder="请输入您的账号">
+            </div>
+            <div class="input-group">
+                <label><i class="fa fa-lock"></i> 密码</label>
+                <input id="password" type="password" placeholder="请输入密码">
+            </div>
+            <button id="login-btn" class="btn btn-primary">
+                <i class="fa fa-sign-in"></i> 安全登录
+            </button>
+            <div style="text-align:center; margin-top:16px; font-size:13px; color:#999;">
+                忘记密码？&nbsp;&nbsp;|&nbsp;&nbsp;注册账号
+            </div>
+        </div>
+
+        <div style="color:rgba(255,255,255,0.7); font-size:12px; margin-top:40px;">
+            © 2026 医路智行 版权所有
+        </div>
+    </div>
+</div>
+
+<!-- 挂号首页 -->
+<div id="registration-page" class="page">
+    <div class="banner">
+        <h3><i class="fa fa-bullhorn"></i> 医院公告</h3>
+        <p>4月7日-4月13日 专家门诊正常开放 · 急诊24小时服务</p>
+    </div>
+
+    <div class="card">
+        <button id="go-register" class="btn btn-primary">
+            <i class="fa fa-plus-circle"></i> 立即预约挂号
+        </button>
+
+        <div class="section-title">快捷服务</div>
+        <div class="grid grid-4">
+            <div class="service-item">
+                <i style="background:#1677ff" class="fa fa-stethoscope"></i>
+                <span>预约挂号</span>
+            </div>
+            <div class="service-item">
+                <i style="background:#00c48c" class="fa fa-file-text-o"></i>
+                <span>报告查询</span>
+            </div>
+            <div class="service-item">
+                <i style="background:#ff7d00" class="fa fa-credit-card"></i>
+                <span>在线缴费</span>
+            </div>
+            <div class="service-item">
+                <i style="background:#ff4d4f" class="fa fa-ambulance"></i>
+                <span>急诊急救</span>
+            </div>
+        </div>
+
+        <div class="section-title">热门科室</div>
+        <div class="grid">
+            <button class="btn btn-light"><i class="fa fa-heart"></i> 心血管内科</button>
+            <button class="btn btn-light"><i class="fa fa-brain"></i> 神经内科</button>
+            <button class="btn btn-light"><i class="fa fa-child"></i> 儿科</button>
+            <button class="btn btn-light"><i class="fa fa-female"></i> 妇产科</button>
+        </div>
+
+        <div class="section-title">推荐医生</div>
+        <div class="doctor-card">
+            <div class="doctor-avatar"><i class="fa fa-user-md"></i></div>
+            <div class="doctor-info">
+                <h4>张主任 主任医师</h4>
+                <p>心血管内科 | 擅长：冠心病、高血压</p>
+            </div>
+        </div>
+        <div class="doctor-card">
+            <div class="doctor-avatar"><i class="fa fa-user-md"></i></div>
+            <div class="doctor-info">
+                <h4>李医生 副主任医师</h4>
+                <p>神经内科 | 擅长：脑卒中、帕金森</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 地图页 -->
+<div id="map-page" class="page">
+    <div class="card">
+        <div style="text-align:center; padding:40px 20px;">
+            <i class="fa fa-map-marker" style="font-size:50px; color:#1677ff; margin-bottom:20px;"></i>
+            <h3 style="margin-bottom:10px;">医院位置导航</h3>
+            <p style="color:#666; line-height:1.6;">实时导航<br>系统将自动规划最优就医路线</p>
+            <button class="btn btn-primary" style="margin-top:20px;">
+                <i class="fa fa-location-arrow"></i> 开启导航
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 停车服务页 -->
+<div id="parking-page" class="page">
+    <div class="card" style="text-align:center;">
+        <div style="width:70px; height:70px; background:#1677ff; border-radius:50%; margin:0 auto 16px;
+                    display:flex; align-items:center; justify-content:center; color:#fff; font-size:30px;">
+            <i class="fa fa-car"></i>
+        </div>
+        <h2 style="margin-bottom:8px;">智慧停车服务</h2>
+        <p style="color:#888; font-size:14px;">实时车位 · 快捷缴费 · 就医优先</p>
+
+        <div class="grid" style="margin-top:24px;">
+            <button class="btn btn-light"><i class="fa fa-search"></i> 查找车位</button>
+            <button class="btn btn-light"><i class="fa fa-credit-card"></i> 停车缴费</button>
+            <button class="btn btn-light"><i class="fa fa-car"></i> 我的车辆</button>
+            <button class="btn btn-light"><i class="fa fa-history"></i> 停车记录</button>
+        </div>
+
+        <button class="btn btn-primary" style="margin-top:10px;">
+            <i class="fa fa-map-marker"></i> 导航至最近车位
+        </button>
+    </div>
+</div>
+
+<!-- 个人中心页 -->
+<div id="mine-page" class="page">
+    <div class="card">
+        <div style="display:flex; align-items:center; gap:14px; margin-bottom:20px;">
+            <div style="width:60px; height:60px; background:#1677ff; border-radius:50%;
+                        display:flex; align-items:center; justify-content:center; color:#fff; font-size:24px;">
+                <i class="fa fa-user"></i>
+            </div>
+            <div>
+                <h3>患者用户</h3>
+                <p style="color:#888; font-size:13px;">就医档案已完善</p>
+            </div>
+        </div>
+
+        <div class="section-title">就医服务</div>
+        <div class="grid">
+            <button class="btn btn-light"><i class="fa fa-file-text-o"></i> 就诊记录</button>
+            <button class="btn btn-light"><i class="fa fa-heartbeat"></i> 体检报告</button>
+            <button class="btn btn-light"><i class="fa fa-bell"></i> 用药提醒</button>
+            <button class="btn btn-light"><i class="fa fa-comments"></i> 在线问诊</button>
+        </div>
+
+        <div class="section-title">便民工具</div>
+        <button class="btn btn-light"><i class="fa fa-qrcode"></i> 电子健康码</button>
+        <button class="btn btn-light"><i class="fa fa-credit-card"></i> 医保电子凭证</button>
+        <button class="btn btn-light"><i class="fa fa-cog"></i> 设置</button>
+    </div>
+</div>
+
+<!-- 问卷页 -->
+<div id="questionnaire-page" class="page">
+    <div class="card">
+        <h1 style="font-size:20px; margin-bottom:24px; display:flex; align-items:center; gap:10px;">
+            <i class="fa fa-list-alt" style="color:#1677ff"></i> 就医信息采集
+        </h1>
+
+        <div class="question">
+            <h2>1. 病情危急性判断 <span class="error-tip" id="emergency-tip">请选择</span></h2>
+            <div class="option-group">
+                <label class="option"><input type="radio" name="emergency" value="病情平稳"> 病情平稳</label>
+                <label class="option"><input type="radio" name="emergency" value="病情一般"> 病情一般</label>
+                <label class="option"><input type="radio" name="emergency" value="病情较重"> 病情较重</label>
+                <label class="option"><input type="radio" name="emergency" value="病情危重"> 病情危重</label>
+            </div>
+        </div>
+
+        <div class="question">
+            <h2>2. 出行方式 <span class="error-tip" id="transport-tip">请选择</span></h2>
+            <div class="option-group">
+                <label class="option"><input type="radio" name="transport" value="私家车"> 私家车</label>
+                <label class="option"><input type="radio" name="transport" value="出租车"> 出租车</label>
+                <label class="option"><input type="radio" name="transport" value="公共交通"> 公共交通</label>
+                <label class="option"><input type="radio" name="transport" value="步行"> 步行</label>
+            </div>
+        </div>
+
+        <div class="question">
+            <h2>3. 路线偏好 <span class="error-tip" id="preference-tip">请选择</span></h2>
+            <div class="option-group">
+                <label class="option"><input type="radio" name="preference" value="优先最短时间"> 优先最短时间</label>
+                <label class="option"><input type="radio" name="preference" value="优先步行最短距离"> 步行最短</label>
+                <label class="option"><input type="radio" name="preference" value="少停车排队时间"> 少停车排队</label>
+                <label class="option"><input type="radio" name="preference" value="无障碍路线"> 无障碍</label>
+            </div>
+        </div>
+
+        <div class="question">
+            <h2>4. 就诊时间段 <span class="error-tip" id="time-tip">请选择</span></h2>
+            <div class="option-group">
+                <label class="option"><input type="radio" name="time" value="普通门诊上午"> 上午门诊</label>
+                <label class="option"><input type="radio" name="time" value="普通门诊下午"> 下午门诊</label>
+                <label class="option"><input type="radio" name="time" value="急诊"> 24小时急诊</label>
+            </div>
+        </div>
+
+        <div class="question">
+            <h2>5. 特殊需求（可选）</h2>
+            <textarea class="text-input" placeholder="如：轮椅、老人陪同、过敏史、孕妇等"></textarea>
+        </div>
+
+        <button id="submit-questionnaire" class="btn btn-primary">
+            <i class="fa fa-check"></i> 生成就医导航方案
+        </button>
+        <button id="back-to-registration" class="btn btn-secondary">
+            <i class="fa fa-arrow-left"></i> 返回
+        </button>
+    </div>
+</div>
+
+<!-- 导航结果页（完全匹配你的图片） -->
+<div id="result-page" class="page">
+    <div class="result-container">
+        <div class="result-header">
+            <h1><i class="fa fa-map"></i> 就医导航方案</h1>
+            <button id="back-to-questionnaire" class="btn btn-secondary" style="width:auto; padding:10px 16px;">
+                <i class="fa fa-refresh"></i> 重新生成
+            </button>
+        </div>
+
+        <!-- 1. 路线规划 -->
+        <div class="result-card">
+            <div class="card-title">
+                <i class="fa fa-route"></i> 路线规划（起点：当前位置 → 终点：安徽省立医院）
+            </div>
+            <div class="route-line-container">
+                <div class="route-node">
+                    <div class="node-dot dot-start"></div>
+                    <div class="node-text">起点（当前位置）</div>
+                </div>
+                <div class="route-line route-animated"></div>
+                <div class="route-node">
+                    <div class="node-text">医疗优先通道</div>
+                </div>
+                <div class="route-line route-normal"></div>
+                <div class="route-node">
+                    <div class="node-dot dot-end"></div>
+                    <div class="node-text">安徽省立医院</div>
+                </div>
+            </div>
+            <div class="info-grid">
+                <div class="info-row">
+                    <span class="info-label">预计总耗时：</span>
+                    <span class="info-text">22分钟（避开南二环拥堵路段，选择畅通支路通行）</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">就诊时段：</span>
+                    <span class="info-text">普通门诊下午（14:00-17:00），南门下客区无排队即停即走</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-text" style="color:#00c48c; font-weight:600;">✅ 最优路线：医疗优先通道</span>
+                </div>
+            </div>
+            <button id="navigate-btn" class="btn btn-primary">
+                <i class="fa fa-location-arrow"></i> 开始实时导航
+            </button>
+        </div>
+
+        <!-- 2. 停车点规划 -->
+        <div class="result-card">
+            <div class="card-title">
+                <i class="fa fa-parking"></i> 停车点规划
+            </div>
+            <div class="parking-tabs">
+                <div class="parking-tab tab-active">推荐停车点</div>
+                <div class="parking-tab">B停车点</div>
+            </div>
+            <div class="info-grid">
+                <div class="info-row">
+                    <span class="info-label">停车点距离：</span>
+                    <span class="info-text">450米，步行仅需4分钟</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">剩余车位：</span>
+                    <span class="info-text" style="color:#1677ff; font-weight:600;">33个（实时更新）</span>
+                </div>
+            </div>
+            <button class="btn btn-primary">
+                <i class="fa fa-map-marker"></i> 获取停车点精准路线
+            </button>
+        </div>
+
+        <!-- 3. 分流点规划 -->
+        <div class="result-card">
+            <div class="card-title">
+                <i class="fa fa-compass"></i> 分流点规划
+            </div>
+            <div class="info-grid">
+                <div class="info-row">
+                    <span class="info-label">推荐下车点：</span>
+                    <span class="info-text">门诊楼南门临时下客区（专属医疗通道，禁止社会车辆长时间停留）</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">步行引导：</span>
+                    <span class="info-text">下客区步行1分钟直达挂号处，沿途绿色箭头醒目标识</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">导视服务：</span>
+                    <span class="info-text">志愿者引导 + 智能导诊机器人，可语音查询科室位置</span>
+                </div>
+            </div>
+            <button class="btn btn-secondary">
+                <i class="fa fa-info-circle"></i> 查看导视详情
+            </button>
+        </div>
+
+        <!-- 4. 就医提示 -->
+        <div class="result-card">
+            <div class="card-title">
+                <i class="fa fa-hospital-o"></i> 就医提示
+            </div>
+            <div class="info-grid">
+                <div class="info-row">
+                    <span class="info-label">目标科室位置：</span>
+                    <span class="info-text">门诊楼2楼外科诊区，2号电梯直达，诊区门口设有签到机</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">预检流程：</span>
+                    <span class="info-text">下车后到1楼预检台完成流调登记，快速通行无需排队</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">挂号凭证：</span>
+                    <span class="info-text">携带身份证/医保卡，提前10分钟到候诊区签到等候</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">便民服务：</span>
+                    <span class="info-text">1楼充电宝/饮水/轮椅借用，3楼候诊区设座椅与充电插座</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 底部导航 -->
+<div class="bottom-nav">
+    <div class="nav-item active" data-page="registration-page">
+        <i class="fa fa-stethoscope"></i>
+        <span>挂号</span>
+    </div>
+    <div class="nav-item" data-page="map-page">
+        <i class="fa fa-map"></i>
+        <span>导航</span>
+    </div>
+    <div class="nav-item" data-page="parking-page">
+        <i class="fa fa-car"></i>
+        <span>停车</span>
+    </div>
+    <div class="nav-item" data-page="mine-page">
+        <i class="fa fa-user"></i>
+        <span>我的</span>
+    </div>
+</div>
+
+<script>
+    // 页面获取
+    const pages = document.querySelectorAll('.page');
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    // 登录
+    document.getElementById('login-btn').onclick = () => {
+        const user = document.getElementById('username').value;
+        const pwd = document.getElementById('password').value;
+        if(user && pwd){
+            showPage('registration-page');
+        }else{
+            alert('请输入账号密码');
+        }
+    };
+
+    // 切换页面
+    function showPage(id) {
+        pages.forEach(p => p.classList.remove('active'));
+        navItems.forEach(n => n.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelector(`[data-page="${id}"]`)?.classList.add('active');
+    }
+
+    // 底部导航
+    navItems.forEach(item => {
+        item.onclick = () => showPage(item.dataset.page);
+    });
+
+    // 挂号流程
+    document.getElementById('go-register').onclick = () => showPage('questionnaire-page');
+    document.getElementById('back-to-registration').onclick = () => showPage('registration-page');
+    document.getElementById('back-to-questionnaire').onclick = () => showPage('questionnaire-page');
+
+    // 选项点击
+    document.querySelectorAll('.option').forEach(opt => {
+        opt.onclick = () => {
+            const name = opt.querySelector('input').name;
+            document.querySelectorAll(`.option:has([name="${name}"])`).forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            opt.querySelector('input').checked = true;
+        };
+    });
+
+    // 提交问卷
+    document.getElementById('submit-questionnaire').onclick = () => {
+        const emergency = document.querySelector('[name="emergency"]:checked');
+        const transport = document.querySelector('[name="transport"]:checked');
+        const preference = document.querySelector('[name="preference"]:checked');
+        const time = document.querySelector('[name="time"]:checked');
+        
+        if(!emergency || !transport || !preference || !time){
+            alert('请完成所有必选项');
+            return;
+        }
+        showPage('result-page');
+    };
+
+    // 导航
+    document.getElementById('navigate-btn').onclick = () => {
+        alert('已打开高德地图，开始医疗优先路线导航');
+    };
+</script>
+</body>
+</html>
